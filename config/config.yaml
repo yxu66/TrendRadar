@@ -90,8 +90,6 @@ platforms:
     name: "掘金"
   - id: "xueqiu"
     name: "雪球"
-  - id: "coolapk"
-    name: "酷安"
   - id: "hupu"
     name: "虎扑"
   - id: "sspai"
