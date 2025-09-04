@@ -1,0 +1,708 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">102 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">28 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">09-04 12:14</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list"><li class="error-item">_36kr</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">创新药 ADC 双抗 GLP-1 NASH CXO 中药 医疗设备 脑机接口 合成生物 先进制造 工业母机 高端数控 激光设备 碳纤维 机器人核心零部件 航空发动机 稀土永磁 有色金属 钛合金 高温合金 碳纤维 石墨烯 超导线材 铜 铝 黄金 锂 钴 镍 稀土 煤炭 油气 化肥 磷化工 碳中和 碳交易 CCER 绿电 绿氢 氢能储运 燃料电池 一带一路 城市更新 装配式建筑 券商 保险 金融科技 数字人民币 跨境支付 北交所 电力 高速公路 港口 电信运营商 国有大行 债券 可转债 TMT转债 新能源转债 中短债 同业存单 债性收益 微盘股 专精特新“小巨人” 中证2000 量化对冲 红利低波策略 更加积极的财政政策 适度宽松的货币政策 逆周期调节、跨周期设计 稳增长、稳就业、稳物价 新质生产力 科技自立自强 反内卷 钢铁 煤炭 设备更新 消费品以旧换新 绿色金融 促进服务消费 新型消费 生育补贴 普惠托育体系 家电 汽车以旧换新 限购优化 地产去库存 保障房 城中村改造 海南自贸港封关运作 北交所扩容 科创板做市 中长期资金入市 险资权益配置 央行结构性货币工具 国家发展规划法草案 医保基金专项整治 反腐制度化 特朗普 关税清单 对华商品 中美、美欧、美日韩贸易链重构 欧盟对华电动汽车关税落地 俄乌停火谈判 对乌军援削减 南海对峙 印巴冲突 以伊冲突 金砖峰会 美英拒签 绿色壁垒与碳关税 美联储 黄金 铜 锂 钴 镍 稀土 产能转移</div>
+                            <div class="word-count hot">15 条</div>
+                        </div>
+                        <div class="word-index">1/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">bilibili 热搜</span><span class="rank-num top">1</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://search.bilibili.com/all?keyword=%E7%89%B9%E6%9C%97%E6%99%AE%E7%9C%8B%E5%AE%8C%E4%B9%9D%E4%B8%89%E9%98%85%E5%85%B5%E5%BF%A7%E5%BF%83%E5%BF%A1%E5%BF%A1" target="_blank" class="news-link">特朗普看完九三阅兵忧心忡忡</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">1</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904115359871800" target="_blank" class="news-link">代币化黄金市场规模一度达到25亿美元</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">凤凰网</span><span class="rank-num top">2</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://v.ifeng.com/c/8mLQ9ucmXqN" target="_blank" class="news-link">特朗普感叹北京阅兵式：这是一个美丽的庆祝，让人印象深刻</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num top">2</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5077688" target="_blank" class="news-link">代币化黄金市场规模一度达到25亿美元</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">华尔街见闻</span><span class="rank-num ">8</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://wallstreetcn.com/articles/3754880" target="_blank" class="news-link">Miran今晚听证会，发言稿“维护美联储独立性”，特朗普要在9月FOMC会议完成任命</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">联合早报</span><span class="rank-num ">9</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.zaochenbao.com/news/politics/202509/0451452.html" target="_blank" class="news-link">特朗普：若关税案败诉 多项贸易协议或须全撤销</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">12</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5077678" target="_blank" class="news-link">双星新材(002585.SZ)：新研发的载体铜箔产品在技术研发与应用层面取得重要突破</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">16</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904113101057800" target="_blank" class="news-link">早盘收盘，国内期货主力合约跌多涨少。碳酸锂涨近2%，工业硅、铁矿石涨超1%，鸡蛋、热卷涨近1%；跌幅方面，红枣跌超3%，低硫燃料油（LU）跌超2%，燃料油、焦煤、SC原油、PX、氧化铝、沥青跌超1%。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">17</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904112955893800" target="_blank" class="news-link">现货黄金短线大幅反弹逾15美元，现报3530.29美元/盎司。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">20</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904112321055800" target="_blank" class="news-link">因金价走软，澳大利亚黄金股下挫</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">雪球</span><span class="rank-num ">22</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://xueqiu.com/s/SH601600" target="_blank" class="news-link">中国铝业</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">25</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904111304616800" target="_blank" class="news-link">现货黄金跌破3520美元/盎司，日内跌1.11%，短线下跌15美元。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">26</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904111204652800" target="_blank" class="news-link">现货黄金日内走低1.00%，现报3524.04美元/盎司。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">雪球</span><span class="rank-num ">28</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://xueqiu.com/s/SH600111" target="_blank" class="news-link">北方稀土</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">百度热搜</span><span class="rank-num ">29</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.baidu.com/s?wd=%E6%99%AE%E4%BA%AC%E9%80%8F%E9%9C%B2%E4%B8%8E%E7%89%B9%E6%9C%97%E6%99%AE%E2%80%9C%E8%BD%A6%E5%86%85%E5%AF%86%E8%B0%88%E2%80%9D%E7%BB%86%E8%8A%82" target="_blank" class="news-link">普京透露与特朗普“车内密谈”细节</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">债券 期货 ETF 基准参考指标 指数 资产负债表 智能投顾 指数基金 每股收益 指数期货 绿色投资 大宗商品 私募市场价值 纳斯达克私募市场 金融衍生产品 杠杆效应 蓝筹股 二次发售 低价股 另类投资</div>
+                            <div class="word-count warm">5 条</div>
+                        </div>
+                        <div class="word-index">2/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num high">4</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904114729189800" target="_blank" class="news-link">印度NIFTY指数开盘上涨0.9%、印度NIFTY银行股指数上涨0.46%。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num high">5</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904114643588800" target="_blank" class="news-link">印度Sensex指数开盘上涨1.1%，报81456.67点。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">14</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904113116660800" target="_blank" class="news-link">股指期货早盘收盘</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">15</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904113113550800" target="_blank" class="news-link">国债期货早盘收盘</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">22</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904111916706800" target="_blank" class="news-link">金十图示：2025年09月04日（周四）富时中国A50指数期货技术面一览（一小时图）</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">MR VR AR 折叠屏 AI 穿戴 空间计算 Vision Pro Micro-OLED 机器人 人形机器人 谐波减速器 伺服电机 力矩传感器 灵巧手 工业自动化 无人物流车 Robotaxi 域控制器 激光雷达 4D毫米波 固态电池 800V高压平台 换电 光伏 HJT 钙钛矿叠层 TopCon BC电池 海上风电 虚拟电厂 储能（钠离子、液流） 低空经济 商业航天 火箭回收 卫星制造 军工信息化 无人机 低可探测材料 量子计算 量子通信 量子测量 Web3 AIGC+NFT 数字身份 区块链底层 消费 国潮 宠物经济 预制菜 休闲零食 免税 白酒 啤酒 医美 户外运动 冰雪经济</div>
+                            <div class="word-count ">4 条</div>
+                        </div>
+                        <div class="word-index">3/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">1</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019912cd-0f72-799d-bd73-23188978680d" target="_blank" class="news-link">【Ukraine’s Parliament Backs Crypto Legalization, Taxation Bill in First Reading: Cointelegraph】Ukraine’s parliament, the Verkhovna Rada, passed the first reading of a bill to legalize and tax cryptocurrency with 246 votes in favor, as announced by lawmaker Yaroslav Zhelezniak. The proposed legislation includes an 18% income tax and a 5% military tax on digital asset profits, alongside a preferential 5% tax rate for fiat conversions during the first year. The bill aligns with Ukraine&#x27;s financial regulator’s April recommendation, exempting crypto-to-crypto and stablecoin transactions, potentially positioning the country closer to crypto-friendly jurisdictions.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">8</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5077682" target="_blank" class="news-link">东方电热(300217.SZ)：柔性织物压力传感产品已准备量产，公司已就机器人相关业务与头部企业开展业务合作洽谈</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">9</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904113753616800" target="_blank" class="news-link">金十图示：2025年09月04日（周四）富时中国A50指数成分股午盘收盘行情一览：多数板块全线飘绿，银行、消费电子等板块少数成分股上涨</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">14</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5077676" target="_blank" class="news-link">光伏设备普涨，光伏ETF、光伏龙头ETF、光伏ETF易方达上涨</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">国务院 中共中央 部委 政府 条例 办法 规定 细则 十四五规划 专项规划 发展战略 通知 通告 公告 意见 政策 税收优惠 财政补贴 产业政策 金融监管 经济开发区 招商引资 科技创新 高新技术企业 研发投入 社会保障 医疗卫生 教育改革 住房保障 就业创业 养老服务 碳中和 碳达峰 环境保护 污染防治 新能源 可再生能源 乡村振兴 农村改革 粮食安全 农业补贴 种业振兴 军工 国防现代化 航空航天 船舶制造 兵器装备</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">4/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">知乎</span><span class="rank-num ">15</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.zhihu.com/question/1946538451781518804" target="_blank" class="news-link">财政部、税务总局宣布划转万亿国资，以充实社保基金，并给出重磅税收优惠，请问这意味着什么？</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">18</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250904112632883800" target="_blank" class="news-link">韩国官员：韩国3500亿美元美国投资由政策机构主导</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">26</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7546010816017924134/" target="_blank" class="news-link">原部委人员间谍罪获死缓：出轨女间谍并生子</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">CPO 半导体 光模块 算力芯片 硅光 ASIC 先进封装 先进制程 第三代半导体 半导体设备 国产替代 Chiplet 5G通信 通信 5G 5.5G 6G 毫米波 卫星 卫星互联网（低轨卫星、星链概念） 北斗导航 天通卫星</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">5/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">9</span><span class="time-info">12时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5077681" target="_blank" class="news-link">ETF午评 | AI硬件剧烈调整，通信设备ETF、通信ETF跌逾8%</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
