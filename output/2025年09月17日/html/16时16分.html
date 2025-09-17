@@ -1,0 +1,767 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">128 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">33 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">09-17 16:16</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list"><li class="error-item">_36kr</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">创新药 ADC 双抗 GLP-1 NASH CXO 中药 医疗设备 脑机接口 合成生物 先进制造 工业母机 高端数控 激光设备 碳纤维 机器人核心零部件 航空发动机 稀土永磁 有色金属 钛合金 高温合金 碳纤维 石墨烯 超导线材 铜 铝 黄金 锂 钴 镍 稀土 煤炭 油气 化肥 磷化工 碳中和 碳交易 CCER 绿电 绿氢 氢能储运 燃料电池 一带一路 城市更新 装配式建筑 券商 保险 金融科技 数字人民币 跨境支付 北交所 电力 高速公路 港口 电信运营商 国有大行 债券 可转债 TMT转债 新能源转债 中短债 同业存单 债性收益 微盘股 专精特新“小巨人” 中证2000 量化对冲 红利低波策略 更加积极的财政政策 适度宽松的货币政策 逆周期调节、跨周期设计 稳增长、稳就业、稳物价 新质生产力 科技自立自强 反内卷 钢铁 煤炭 设备更新 消费品以旧换新 绿色金融 促进服务消费 新型消费 生育补贴 普惠托育体系 家电 汽车以旧换新 限购优化 地产去库存 保障房 城中村改造 海南自贸港封关运作 北交所扩容 科创板做市 中长期资金入市 险资权益配置 央行结构性货币工具 国家发展规划法草案 医保基金专项整治 反腐制度化 特朗普 关税清单 对华商品 中美、美欧、美日韩贸易链重构 欧盟对华电动汽车关税落地 俄乌停火谈判 对乌军援削减 南海对峙 印巴冲突 以伊冲突 金砖峰会 美英拒签 绿色壁垒与碳关税 美联储 黄金 铜 锂 钴 镍 稀土 产能转移</div>
+                            <div class="word-count hot">13 条</div>
+                        </div>
+                        <div class="word-index">1/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">凤凰网</span><span class="rank-num top">1</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://news.ifeng.com/c/8miuwXIL4Q9" target="_blank" class="news-link">特朗普再延长TikTok禁令执行，外交部回应</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">1</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917161051256800" target="_blank" class="news-link">伦敦金属交易所（LME）美国铜库存自2023年12月以来首次增加。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">财联社热门</span><span class="rank-num high">4</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.cls.cn/detail/2147607" target="_blank" class="news-link">时隔九个月 今晚美联储将重启降息！</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">凤凰网</span><span class="rank-num high">4</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://news.ifeng.com/c/8mispGmrCDj" target="_blank" class="news-link">硅谷巨头携大单随特朗普访英：投资超300亿英镑，打造英版星门</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num high">5</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550929304398335524/" target="_blank" class="news-link">美联储若降息对中国楼市有何影响</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">7</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550776867473608255/" target="_blank" class="news-link">中方回应特朗普延长TikTok禁令执行</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">8</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917160145951800" target="_blank" class="news-link">德意志银行：将明年黄金价格预测上调至每盎司4000美元（此前为每盎司3700美元）。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">雪球</span><span class="rank-num ">10</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://xueqiu.com/s/SZ000737" target="_blank" class="news-link">北方铜业</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">12</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550922539011149331/" target="_blank" class="news-link">美联储利率决议本周重磅来袭</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">12</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917160051595800" target="_blank" class="news-link">LME有色金属库存日报</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">15</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550924888106601994/" target="_blank" class="news-link">为何特朗普笃定9月美联储一定会降息</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">22</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917154803223800" target="_blank" class="news-link">印尼央行行长：利率决策考虑了美联储降息的可能性。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">24</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550927102472621631/" target="_blank" class="news-link">美联储年内将降息几次</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">MR VR AR 折叠屏 AI 穿戴 空间计算 Vision Pro Micro-OLED 机器人 人形机器人 谐波减速器 伺服电机 力矩传感器 灵巧手 工业自动化 无人物流车 Robotaxi 域控制器 激光雷达 4D毫米波 固态电池 800V高压平台 换电 光伏 HJT 钙钛矿叠层 TopCon BC电池 海上风电 虚拟电厂 储能（钠离子、液流） 低空经济 商业航天 火箭回收 卫星制造 军工信息化 无人机 低可探测材料 量子计算 量子通信 量子测量 Web3 AIGC+NFT 数字身份 区块链底层 消费 国潮 宠物经济 预制菜 休闲零食 免税 白酒 啤酒 医美 户外运动 冰雪经济</div>
+                            <div class="word-count hot">10 条</div>
+                        </div>
+                        <div class="word-index">2/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">1</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199569e-6d4e-755e-85d4-25a65a55d0a0" target="_blank" class="news-link">【Gold Slips But Holds Close to All-Time Highs Ahead of Fed Rate Decision: Pepperstone】Gold prices slip in early trade on profit-taking pressures and a firmer U.S. dollar, but continue to hold near record highs ahead of the Fed&#x27;s policy decision later on Wednesday. Futures are down 0.5% to $3,706.50 a troy ounce after settling at $3,725.10 in the previous session, while the dollar index trades 0.2% higher at 96.82.Investors expect the U.S. central bank to cut rates by 25 basis points, though attention will focus on Fed Chair Jerome Powell&#x27;s remarks for cues on the pace of future monetary easing. &quot;Markets have priced a deep easing path, leaving them vulnerable to disappointment if the Fed underdelivers,&quot; says Pepperstone&#x27;s Ahmad Assiri. Meanwhile, retail sales rose for a third straight month in August, revealing healthy levels of spending despite concerns about lingering inflation and a weakening job market.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">2</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995696-a24b-755e-85d3-dcde993d3032" target="_blank" class="news-link">【Fed Set to Resume Its Path Towards 3%: ING】ING anticipates the Fed will cut rates 25bp tonight and deliver 75bp total cuts through March 2026, as labor market weakness now outweighs inflation concerns. After holding rates steady through 2025 following last year&#x27;s 100bp cut, the Fed&#x27;s stance shifted at July&#x27;s FOMC meeting when officials acknowledged a weakening jobs market justified policy loosening, with Chair Powell confirming at Jackson Hole that economic changes may soon &quot;warrant&quot; lower rates. Labor market deterioration is the key driver, as Q2&#x27;s 3.3% GDP growth masked consumer weakness with spending plateauing due to household concerns over tariffs, cooling employment, and wealth volatility. The latest Fed Beige Book confirmed this narrative, reporting little economic activity change and flat-to-declining consumer spending across districts, with 11 of 12 regions showing no hiring over seven weeks. While inflation remains above target due to tariff impacts, the Fed recognizes it needs to move policy closer to neutral without waiting for full confirmation in data. Though a 50bp cut remains possible given jobs deterioration, majority of members caution regarding tariff-induced inflation makes 25bp the most likely outcome, aligning with market expectations.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">3</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995689-2257-755e-85d3-c5fc1feccdbc" target="_blank" class="news-link">【🚨Fed Decision Showdown: JPMorgan Maps Out Scenarios That Could Send Stocks Soaring — or Crashing 5%】JPMorgan has mapped out how stocks could swing depending on how the Fed moves this week. Here’s the breakdown:&lt;br/&gt;&lt;b&gt;1. The “Dovish Cut” — Most Likely (47.5% chance)&lt;/b&gt;&lt;br/&gt;Fed slashes rates by 25 bps and issue dovish language.&lt;br/&gt;Immediate reaction: S&amp;P 500 pops +1% to ~6,650.&lt;br/&gt;But beware: JPMorgan warns a &lt;b&gt;sell-the-news slide&lt;/b&gt; could drag stocks down as much as &lt;b&gt;5%&lt;/b&gt; in the weeks ahead.&lt;br/&gt;Buying opportunities if that happens:&lt;br/&gt;&lt;b&gt;Mega-cap tech &amp; AI names&lt;/b&gt; — JPMorgan stays overweight.&lt;br/&gt;&lt;b&gt;Utilities&lt;/b&gt; — poised to benefit if rate expectations and 10Y yields fall.&lt;br/&gt;&lt;b&gt;2. The “Hawkish Cut” — Second Likeliest (40% chance)&lt;/b&gt;&lt;br/&gt;Fed delivers the expected 25 bps cut but signals hawkish concerns.&lt;br/&gt;S&amp;P 500 likely stalls or dips -0.5%.&lt;br/&gt;Powell could hint that the&lt;b&gt; job market is now a bigger worry than inflation&lt;/b&gt;, undercutting the rally.&lt;br/&gt;&lt;b&gt;3. The “Shock and Awe” Scenarios — Low Odds, High Volatility (11.5% chance)&lt;/b&gt;&lt;br/&gt;&lt;b&gt;No cut (4%)&lt;/b&gt;: Stocks sink 1%-2%, pushing the S&amp;P 500 toward 6,450.&lt;br/&gt;&lt;b&gt;Jumbo cut of 50 bps (7.5%)&lt;/b&gt;: Market chaos — S&amp;P 500 could&lt;b&gt; swing ±1.5%&lt;/b&gt; depending on how investors read the move.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num high">4</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995653-a50e-755e-85d3-54b6d59e0196" target="_blank" class="news-link">【Fed&#x27;s Pace on Cuts Key for Markets: Morgan Stanley】Morgan Stanley says equity markets hinge on weak U.S. jobs data and whether the Fed cuts rates quickly enough. Traders expect a 25 bp cut this week, but lingering inflation may slow the Fed’s response. The bank sees short-term consolidation in stocks but remains bullish long term, targeting the S&amp;P 500 at 7,200 by mid-2026 on strong earnings. They favor small caps and reflation plays ahead, while dip-buying into year-end.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num high">5</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01995645-e9ab-755e-85d3-3b79f4411e20" target="_blank" class="news-link">【Risk of Longer-Dated Yields Rising Post Likely Fed Rate Cut Seen as Limited: Julius Baer】There are worries about a repeat of September 2024 when longer-maturity Treasurys yields rose after the Federal Reserve&#x27;s larger-than-usual 50-basis point rate cut, says Julius Baer&#x27;s Dario Messi in a note. However, the risks of that repeating are limited this time around, says the head of fixed income. Despite some valid arguments, the current starting point offers more cushion against such a development and risks are more limited at this point, Messi says. The 10-year Treasury yield is currently higher than it was in Sept. 2024 when the Fed started its rate cuts.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">7</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019952de-8d5e-799d-be05-be02ece0d0f2" target="_blank" class="news-link">【US Stocks Steady as Fed Looms; Retail Sales Beat, Oracle and Tesla Gain】U.S. equities held to modest gains Tuesday morning as traders positioned for the Federal Reserve to resume its interest-rate cutting cycle. The S&amp;P 500 was little changed at 9:45 a.m. in New York, while the Nasdaq 100 struggled to maintain a small advance. A close higher would mark the benchmark’s 10th straight gain, its longest winning streak since November 2021.&lt;br/&gt;Among individual movers, Oracle rose after CBS News reported it is part of a consortium that could allow TikTok to continue operating in the U.S. under a potential framework deal. Tesla advanced even as U.S. auto safety regulators launched an investigation into possible defects with some vehicle doors.&lt;br/&gt;Meanwhile, U.S. retail sales climbed 0.6% in August, following a similar gain in July, the Commerce Department reported Tuesday. Excluding autos, sales increased 0.7%. Nine of 13 categories rose, underscoring resilient consumer spending and beating all estimates in a Bloomberg survey of economists.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">8</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019952d0-aecf-799d-be05-8439f67ec3dd" target="_blank" class="news-link">【Fed Could Continue Cutting Rates in 2026, 2027: Credit Mutuel Asset Management】The Federal Reserve is expected to begin a cycle of interest-rate cuts this week which could continue into 2027, Credit Mutuel Asset Management&#x27;s Francois Rimeu says in a note. &quot;Slowing activity and labor market weakness argue for greater monetary easing than anticipated in June, leading to a lower terminal rate by 2027,&quot; the senior strategist says. Beyond an anticipated 25-basis-point cut this week, Credit Mutuel expects another reduction this year, two further cuts in 2026 and another cut to 3.1% in 2027, close to the long-term rate of 3%, he says. For 2028, Credit Mutuel expects stable rates. U.S. money markets currently price in almost six rate cuts by the end of next year, data show.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">9</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019950ec-6ff3-799d-bdff-0238341a68db" target="_blank" class="news-link">【Analysts Split on Cut Size Ahead of September FOMC Meeting】&lt;b&gt;Thierry Wizman (Macquarie)&lt;/b&gt;: Fed will balance downside risks to employment without signaling a long string of cuts.&lt;br/&gt;&lt;b&gt;Lon Erickson (Thornburg):&lt;/b&gt; Unlikely to see another 50-bp cut this year; inflation remains the wild card.&lt;br/&gt;&lt;b&gt;Samuel Tombs (Pantheon Macroeconomics)&lt;/b&gt;: Predicts a possible three-way split among governors, with some voting for a 50-bp cut, a majority for a smaller cut, and a few for no change.&lt;br/&gt;&lt;b&gt;Jim Caron (Morgan Stanley) and Michael Feroli (JPMorgan)&lt;/b&gt;: Fed will likely choose a smaller, measured cut rather than aggressive action.&lt;br/&gt;&lt;b&gt;Claudia Sahm (New Century Advisors)&lt;/b&gt;: Cut expected due to weak employment rather than favorable inflation; still sees inflation as “too firm.”&lt;br/&gt;&lt;b&gt;Brian Buetel (UBS Wealth Management)&lt;/b&gt;: Forecasts a 100-bp cumulative cut over the next four meetings through January 2026.&lt;br/&gt;&lt;b&gt;James Bullard (former St. Louis Fed)&lt;/b&gt;: Supports a 25-bp cut and signals further easing, noting tariffs are likely a temporary inflation influence.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">10</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199504c-3374-799d-bdfd-8faecb18fe94" target="_blank" class="news-link">【A Dovish Fed Guidance Could Boost Asian Equities: Eastspring Investments】A dovish guidance by Federal Reserve chair Jerome Powell at this week&#x27;s meeting could catalyse further U.S. dollar weakness, boosting Asian equities, say Vis Nayar and Ray Farris at Eastspring Investments. &quot;Asian equities market outperformance this year has come mainly from local funds, but a resumption of U.S. dollar weakness could spur foreign diversification flows out of the U.S. into emerging markets,&quot; they write in a note. Improving earnings fundamentals have also been a key driver of recently strong Asian equities, they say, with U.S. trade deals leading to higher year-ahead earnings estimates in most Asian markets. Asian markets&#x27; main risks would be if the median 2026 Fed Funds rate dot remains unchanged or if Powell downplays the outlook for cuts, they add.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">26</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7550895604931497522/" target="_blank" class="news-link">波兰“无人机事件”会引爆冲突吗</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">国务院 中共中央 部委 政府 条例 办法 规定 细则 十四五规划 专项规划 发展战略 通知 通告 公告 意见 政策 税收优惠 财政补贴 产业政策 金融监管 经济开发区 招商引资 科技创新 高新技术企业 研发投入 社会保障 医疗卫生 教育改革 住房保障 就业创业 养老服务 碳中和 碳达峰 环境保护 污染防治 新能源 可再生能源 乡村振兴 农村改革 粮食安全 农业补贴 种业振兴 军工 国防现代化 航空航天 船舶制造 兵器装备</div>
+                            <div class="word-count warm">5 条</div>
+                        </div>
+                        <div class="word-index">3/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">凤凰网</span><span class="rank-num ">9</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://news.ifeng.com/c/8mirRjszxn1" target="_blank" class="news-link">担忧引发美以不满，日本政府决定暂不承认巴勒斯坦国</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">抖音</span><span class="rank-num ">9</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.douyin.com/hot/2239903" target="_blank" class="news-link">组合驾驶辅助相关标准征求意见</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">财联社热门</span><span class="rank-num ">12</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.cls.cn/detail/2147656" target="_blank" class="news-link">工信部就智能网联汽车组合驾驶辅助相关标准公开征求意见</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">17</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917155320283800" target="_blank" class="news-link">印尼央行行长：欢迎政府出台的新经济刺激措施，这将支持实体经济。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">18</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917154933802800" target="_blank" class="news-link">印尼央行行长：所有政策都是为了在维持稳定的同时支持增长。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">CPO 半导体 光模块 算力芯片 硅光 ASIC 先进封装 先进制程 第三代半导体 半导体设备 国产替代 Chiplet 5G通信 通信 5G 5.5G 6G 毫米波 卫星 卫星互联网（低轨卫星、星链概念） 北斗导航 天通卫星</div>
+                            <div class="word-count ">2 条</div>
+                        </div>
+                        <div class="word-index">4/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">俄罗斯卫星通讯社</span><span class="rank-num top">2</span>
+                            </div>
+                            <div class="news-title"><a href="https://sputniknews.cn/20250917/1067492687.html" target="_blank" class="news-link">俄罗斯即将拥有可取代“星链”的本国卫星通信终端</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num high">5</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084998" target="_blank" class="news-link">鼎通科技(688668.SH)：液冷产品主要用于对连接器和光模块信号传递接触面进行散热处理</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">债券 期货 ETF 基准参考指标 指数 资产负债表 智能投顾 指数基金 每股收益 指数期货 绿色投资 大宗商品 私募市场价值 纳斯达克私募市场 金融衍生产品 杠杆效应 蓝筹股 二次发售 低价股 另类投资</div>
+                            <div class="word-count ">2 条</div>
+                        </div>
+                        <div class="word-index">5/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">2</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917161016870800" target="_blank" class="news-link">金十图示：2025年09月17日（周三）香港恒生指数期货技术面一览（5小时图）</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">25</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250917154326564800" target="_blank" class="news-link">瑞银：将今年年底斯托克600指数目标价从500点上调至600点，并将2026年年底预期点位定为650点。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">人工智能 AIGC 大模型 AI芯片 AI服务器 AI PC AI手机 AI 医疗影像 AI 金融 AI 教育</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">6/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">11</span><span class="time-info">16时16分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5084959" target="_blank" class="news-link">研报掘金丨中信建投：维持工业富联“增持”评级，AI服务器业务后续展望乐观</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
