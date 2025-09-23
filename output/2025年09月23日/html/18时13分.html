@@ -1,0 +1,650 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">122 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">24 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">09-23 18:13</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list"><li class="error-item">_36kr</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">MR VR AR 折叠屏 AI 穿戴 空间计算 Vision Pro Micro-OLED 机器人 人形机器人 谐波减速器 伺服电机 力矩传感器 灵巧手 工业自动化 无人物流车 Robotaxi 域控制器 激光雷达 4D毫米波 固态电池 800V高压平台 换电 光伏 HJT 钙钛矿叠层 TopCon BC电池 海上风电 虚拟电厂 储能（钠离子、液流） 低空经济 商业航天 火箭回收 卫星制造 军工信息化 无人机 低可探测材料 量子计算 量子通信 量子测量 Web3 AIGC+NFT 数字身份 区块链底层 消费 国潮 宠物经济 预制菜 休闲零食 免税 白酒 啤酒 医美 户外运动 冰雪经济</div>
+                            <div class="word-count hot">11 条</div>
+                        </div>
+                        <div class="word-index">1/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">2</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019975e3-24e4-7cc5-9c6b-2c15c2138506" target="_blank" class="news-link">【Fed Can&#x27;t Hand out Cuts Like Candy at a Party: Swissquote】The U.S. two-year yield has rebounded past 3.60% even after Trump-linked economist Stephen Miran argued that the neutral rate is much lower than current levels and that he would cut rates by 150 basis points very quickly to get there. It&#x27;s the kind of comments that are so far-stretched they can&#x27;t be taken seriously enough to shift market expectations, says Ipek Ozkardeskaya, senior analyst at Swissquote. Proof? The two-year yields have moved higher, she adds. That&#x27;s a sign that lowering rates wouldn&#x27;t necessarily bring down long-term borrowing costs if the size and the speed of easing aren&#x27;t warranted, she says. The reality is that the Fed can&#x27;t hand out rate cuts like candy at a party, she says.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num high">4</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019975d7-1622-7cc5-9c6a-f8e2c4c68095" target="_blank" class="news-link">OECD SEES FED CUTTING KEY RATE AGAIN IN 2025, TWICE IN EARLY 2026</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">9</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019975ab-6182-7cc5-9c6a-78390f074824" target="_blank" class="news-link">【China Seeks to Store Foreign Sovereign Gold to Boost Global Market Role】China is seeking to become a global custodian of foreign sovereign gold reserves to bolster its position in the international bullion market, according to sources familiar with the matter. The People’s Bank of China (PBOC), through the Shanghai Gold Exchange (SGE), has been encouraging central banks from friendly nations to purchase and store gold within China’s borders. This initiative aligns with Beijing’s broader goal of reducing dependence on the US dollar and Western financial hubs such as London and Switzerland. The reserves would be housed in SGE-linked custodian warehouses and consist of newly acquired gold that contributes to foreign countries&#x27; reserves, rather than relocating existing stockpiles. While China’s domestic gold market is the largest globally, its reported central bank reserves rank fifth worldwide, far behind the UK’s 5,000 tons stored in the Bank of England’s vaults. However, the PBOC has been on a gold-buying spree for ten consecutive months, and demand from central banks has helped push gold prices to record highs. China has also eased restrictions on gold imports and launched offshore vaults and yuan-denominated gold contracts in Hong Kong to internationalize its currency and increase trading volumes. This move could attract nations looking to secure reserves and mitigate risks of financial isolation, particularly after the US and allies froze Russia’s foreign exchange reserves in 2022.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">10</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019975a0-eb15-7cc5-9c6a-62ab675798d3" target="_blank" class="news-link">【Gold Hits Record High on U.S. Rate-Cut Hopes】Gold prices continue to push higher, setting a record high on Tuesday on expectations that the Federal Reserve will cut interest rates further this year. In early trade, futures rise 0.4% to $3,788.80 a troy ounce, after touching $3,795.10 earlier in the session as traders await Fed Chair Jerome Powell&#x27;s speech for further policy cues. Meanwhile, Fed Gov. Stephen Miran made the case that interest rates are too high. Miran said steeper cuts are needed to avoid unnecessary damage to the labor market. &lt;b&gt;The precious metal is up 43.5% this year, driven by strong safe-haven demand, ETF inflows, a softer dollar, and continued diversification by central banks away from dollar holdings. Traders now await Friday&#x27;s U.S. personal consumption expenditures data, which could boost the case for additional monetary stimulus.&lt;/b&gt;</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">11</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01997545-4ba0-7cc5-9c69-434aea3e434a" target="_blank" class="news-link">【Gold Holds Near Record High Ahead of Powell’s Speech】Gold prices steadied on Tuesday after hitting a record high, supported by expectations of further U.S. rate cuts and a weaker dollar, while investors awaited comments from Federal Reserve Chair Jerome Powell for policy signals.&lt;br/&gt;Spot gold rose 0.2% to $3,753.25 per ounce at 0604 GMT, after reaching an all-time high of $3,759.02 earlier in the session.&lt;br/&gt;“This is predominantly driven by monetary policy expectations, potentially lower interest rates, and upside risks to inflation,” said Capital.com analyst Kyle Rodda.&lt;br/&gt;“The short-term trend remains bullish, but we expect a near-term pullback due to technical factors,” added OANDA senior market analyst Kelvin Wong.&lt;br/&gt;Powell’s speech at 1635 GMT is in focus, with investors also watching Friday’s release of the U.S. Personal Consumption Expenditures index, the Fed’s preferred inflation measure.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">格隆汇</span><span class="rank-num ">11</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.gelonghui.com/news/5088172" target="_blank" class="news-link">华菱线缆(001208.SZ)：拟收购三竹智能控制权加速公司切入机器人、高频传输等业务领域</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">12</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01997444-d2fb-7cc5-9c66-f95f53c201ca" target="_blank" class="news-link">【Gold Hits Record High of $3,749.27 in Asia, Driven by ETF Inflows Amid Fed Rate-Cut Cycle】Gold edged up to a record high of $3,749.27/oz in Asia on Tuesday. “After pulling back the day after the Fed’s 25 basis-point rate cut — potentially on some perceived caution in Powell’s FOMC comments — new upward momentum has taken root with ETF inflows still the driving force,” BMO Capital Markets analysts including Helen Amos and George Heppel said in a note late Monday. “With a rate-cutting cycle firmly on the table we think risk-reward remains positive for prices into” the fourth quarter.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">bilibili 热搜</span><span class="rank-num ">13</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://search.bilibili.com/all?keyword=%E5%9B%BD%E4%BA%A7%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%96%B0%E6%A8%A1%E5%BC%8F%E8%B5%9B%E4%B8%8D%E5%80%92%E7%BF%81" target="_blank" class="news-link">国产机器人新模式赛不倒翁</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">13</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199743b-b2fb-7cc5-9c66-ccd2a4c07f1c" target="_blank" class="news-link">JPMORGAN CEO DIMON ON INTEREST RATES - GONNA BE HARD FOR THE FED TO CUT MORE</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">14</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01997428-2e7a-7cc5-9c66-2a903d6abaad" target="_blank" class="news-link">【Gold Steady, Supported by Hopes for More Fed Rate Cuts: FFA Kings】Gold is steady in the early Asian trade, supported by hopes for more Fed rate cuts. Fed Chair Powell is scheduled to deliver comments on the U.S. economy later today. The precious metal hit another record high overnight, building on momentum from last week&#x27;s Fed rate cut and guidance that further easing is likely as the labor market weakens, FFA Kings&#x27; Fadi Al Kurdi says in an email. &quot;Expectations of continued monetary loosening have reinforced demand for the non-yielding asset,&quot; the founder and CEO adds. Spot gold is little changed at $3,747.22/oz.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num ">15</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=019972ea-0fa8-7cc5-9c65-0f0fdcf72793" target="_blank" class="news-link">【Gold Hits Record $3,749 as Fed Cut Bets Weigh on Dollar】Gold surged to a fresh all-time high of $3,749, up 1.6%, as traders price in Fed rate cuts and the US Dollar falls. Safe-haven flows were supported by ongoing geopolitical tensions in Ukraine and rising central bank demand, with Societe Generale noting 2025 purchases rebounding to 63 tonnes.&lt;br/&gt;US Treasury yields climbed slightly, but real yields remained supportive of bullion. Atlanta Fed’s Bostic expressed caution on cuts, while Richmond’s Barkin, St. Louis’ Musalem, Cleveland’s Hammack, and Fed Governor Miran signaled openness to easing if labor market or inflation trends shift. Fed rate cut odds for October 19 stand at 89%.&lt;br/&gt;Swiss gold exports to the US plunged 99% in August due to tariffs, but China’s imports jumped to 35 tonnes, the highest since May 2024.&lt;br/&gt;Technically, gold eyes $3,750 next, with potential targets at $3,800–$4,000. Support lies at $3,700, $3,650, and $3,600.</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">创新药 ADC 双抗 GLP-1 NASH CXO 中药 医疗设备 脑机接口 合成生物 先进制造 工业母机 高端数控 激光设备 碳纤维 机器人核心零部件 航空发动机 稀土永磁 有色金属 钛合金 高温合金 碳纤维 石墨烯 超导线材 铜 铝 黄金 锂 钴 镍 稀土 煤炭 油气 化肥 磷化工 碳中和 碳交易 CCER 绿电 绿氢 氢能储运 燃料电池 一带一路 城市更新 装配式建筑 券商 保险 金融科技 数字人民币 跨境支付 北交所 电力 高速公路 港口 电信运营商 国有大行 债券 可转债 TMT转债 新能源转债 中短债 同业存单 债性收益 微盘股 专精特新“小巨人” 中证2000 量化对冲 红利低波策略 更加积极的财政政策 适度宽松的货币政策 逆周期调节、跨周期设计 稳增长、稳就业、稳物价 新质生产力 科技自立自强 反内卷 钢铁 煤炭 设备更新 消费品以旧换新 绿色金融 促进服务消费 新型消费 生育补贴 普惠托育体系 家电 汽车以旧换新 限购优化 地产去库存 保障房 城中村改造 海南自贸港封关运作 北交所扩容 科创板做市 中长期资金入市 险资权益配置 央行结构性货币工具 国家发展规划法草案 医保基金专项整治 反腐制度化 特朗普 关税清单 对华商品 中美、美欧、美日韩贸易链重构 欧盟对华电动汽车关税落地 俄乌停火谈判 对乌军援削减 南海对峙 印巴冲突 以伊冲突 金砖峰会 美英拒签 绿色壁垒与碳关税 美联储 黄金 铜 锂 钴 镍 稀土 产能转移</div>
+                            <div class="word-count hot">10 条</div>
+                        </div>
+                        <div class="word-index">2/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">联合早报</span><span class="rank-num top">1</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.zaochenbao.com/news/china/202509/2353036.html" target="_blank" class="news-link">中国谋求托管外国黄金储备 以增强全球影响力</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">俄罗斯卫星通讯社</span><span class="rank-num top">3</span>
+                            </div>
+                            <div class="news-title"><a href="https://sputniknews.cn/20250923/1067565054.html" target="_blank" class="news-link">媒体：乌克兰认为特朗普不太可能对俄罗斯实施新制裁</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">联合早报</span><span class="rank-num ">6</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.zaochenbao.com/news/china/202509/2353031.html" target="_blank" class="news-link">美议员称中国稀土问题悬而未决</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">11</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923172811544800" target="_blank" class="news-link">盯盘神器·现货黄金：抵达一倍ATR目标，但情绪依然高度看涨</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">12</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923172615186800" target="_blank" class="news-link">现货黄金突破3790美元</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">财联社热门</span><span class="rank-num ">13</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.cls.cn/detail/2153203" target="_blank" class="news-link">美联储降息后币价反而大跌！加密货币总市值下破4万亿美元</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">15</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923171918652800" target="_blank" class="news-link">降息预期和强劲需求推动金价持续飙升 黄金站上3780美元关口</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">澎湃新闻</span><span class="rank-num ">17</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://m.thepaper.cn/newsDetail_forward_31664109" target="_blank" class="news-link">以色列誓言报复“承认潮”，内塔尼亚胡：我下周见特朗普，你们等着瞧</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">澎湃新闻</span><span class="rank-num ">20</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://m.thepaper.cn/newsDetail_forward_31655243" target="_blank" class="news-link">释新闻｜特朗普为何希望美军重返阿富汗？</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">今日头条</span><span class="rank-num ">26</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.toutiao.com/trending/7553198994443062793/" target="_blank" class="news-link">黄金暴涨背后的赢家与陷阱</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">国务院 中共中央 部委 政府 条例 办法 规定 细则 十四五规划 专项规划 发展战略 通知 通告 公告 意见 政策 税收优惠 财政补贴 产业政策 金融监管 经济开发区 招商引资 科技创新 高新技术企业 研发投入 社会保障 医疗卫生 教育改革 住房保障 就业创业 养老服务 碳中和 碳达峰 环境保护 污染防治 新能源 可再生能源 乡村振兴 农村改革 粮食安全 农业补贴 种业振兴 军工 国防现代化 航空航天 船舶制造 兵器装备</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">3/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num high">5</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923173759880800" target="_blank" class="news-link">英国央行首席经济学家皮尔：我们可能需要维持紧缩性的货币政策。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">9</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923173420868800" target="_blank" class="news-link">英国央行首席经济学家皮尔：上周货币政策委员会关于量化紧缩节奏的投票是一种务实的做法，旨在减少对市场的干预。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">17</span><span class="time-info">18时13分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250923171738500800" target="_blank" class="news-link">据港交所公告，9月17日，摩根大通将小鹏汽车(09868.HK)的空头持仓增至5.09%，此前为4.45%。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
