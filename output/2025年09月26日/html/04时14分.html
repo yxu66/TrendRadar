@@ -1,0 +1,667 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">60 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">23 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">09-26 04:14</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list"><li class="error-item">_36kr</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">创新药 ADC 双抗 GLP-1 NASH CXO 中药 医疗设备 脑机接口 合成生物 先进制造 工业母机 高端数控 激光设备 碳纤维 机器人核心零部件 航空发动机 稀土永磁 有色金属 钛合金 高温合金 碳纤维 石墨烯 超导线材 铜 铝 黄金 锂 钴 镍 稀土 煤炭 油气 化肥 磷化工 碳中和 碳交易 CCER 绿电 绿氢 氢能储运 燃料电池 一带一路 城市更新 装配式建筑 券商 保险 金融科技 数字人民币 跨境支付 北交所 电力 高速公路 港口 电信运营商 国有大行 债券 可转债 TMT转债 新能源转债 中短债 同业存单 债性收益 微盘股 专精特新“小巨人” 中证2000 量化对冲 红利低波策略 更加积极的财政政策 适度宽松的货币政策 逆周期调节、跨周期设计 稳增长、稳就业、稳物价 新质生产力 科技自立自强 反内卷 钢铁 煤炭 设备更新 消费品以旧换新 绿色金融 促进服务消费 新型消费 生育补贴 普惠托育体系 家电 汽车以旧换新 限购优化 地产去库存 保障房 城中村改造 海南自贸港封关运作 北交所扩容 科创板做市 中长期资金入市 险资权益配置 央行结构性货币工具 国家发展规划法草案 医保基金专项整治 反腐制度化 特朗普 关税清单 对华商品 中美、美欧、美日韩贸易链重构 欧盟对华电动汽车关税落地 俄乌停火谈判 对乌军援削减 南海对峙 印巴冲突 以伊冲突 金砖峰会 美英拒签 绿色壁垒与碳关税 美联储 黄金 铜 锂 钴 镍 稀土 产能转移</div>
+                            <div class="word-count hot">16 条</div>
+                        </div>
+                        <div class="word-index">1/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">3</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926040430874800" target="_blank" class="news-link">美联储戴利：美联储利率降至3%的中性水平并不会解决住房可负担性危机。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">7</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034631459800" target="_blank" class="news-link">美联储戴利：美联储同时关注低就业率和求职所需时间，作为劳动力市场的领先指标，这些是就业市场的危险信号。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">8</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034301752800" target="_blank" class="news-link">美联储戴利：美联储需密切关注通胀，同时也要留意劳动力市场是否存在疲软迹象。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">华尔街见闻</span><span class="rank-num ">9</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://wallstreetcn.com/articles/3756270" target="_blank" class="news-link">数字人民币国际运营中心正式运营，推出跨境数字支付、区块链服务及数字资产三大平台</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">9</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034217801800" target="_blank" class="news-link">美联储库克警告最高法院，如果她被解雇，市场将陷入“混乱”。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">10</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034151902800" target="_blank" class="news-link">美联储戴利：美国经济状况良好。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">12</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034013124800" target="_blank" class="news-link">美联储戴利：不应完全转向中性立场，风险太大。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">13</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926033902631800" target="_blank" class="news-link">美联储戴利：我们正处于“权衡”之中，需平衡风险。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">14</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926033737752800" target="_blank" class="news-link">美联储戴利：我认为随着时间推移，可能还需要进一步降息。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">15</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926033714437800" target="_blank" class="news-link">美联储戴利：利率仍保持适度紧缩。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">16</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926033657819800" target="_blank" class="news-link">美联储戴利：关税对通胀的影响并未如预期般显著，反而对劳动力市场产生了更大影响。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">21</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926031914644800" target="_blank" class="news-link">亿万富豪格里芬抨击特朗普大搞企业裙带关系</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">22</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926031720279800" target="_blank" class="news-link">美联储理事库克就特朗普总统解雇她的企图向美国最高法院提交回应。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">23</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926031643961800" target="_blank" class="news-link">沙特外交大臣：阿拉伯和穆斯林国家已向美国总统特朗普明确指出以色列吞并约旦河西岸的风险与危险。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">百度热搜</span><span class="rank-num ">25</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.baidu.com/s?wd=%E6%B3%BD%E8%BF%9E%E6%96%AF%E5%9F%BA%E5%90%91%E7%89%B9%E6%9C%97%E6%99%AE%E6%8F%90%E8%A6%81%E6%B1%82+%E8%A6%81%E6%96%B0%E5%9E%8B%E6%AD%A6%E5%99%A8" target="_blank" class="news-link">泽连斯基向特朗普提要求 要新型武器</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">16</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">虎扑</span><span class="rank-num ">26</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://bbs.hupu.com/634938744.html" target="_blank" class="news-link">中国电力系统格局</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">MR VR AR 折叠屏 AI 穿戴 空间计算 Vision Pro Micro-OLED 机器人 人形机器人 谐波减速器 伺服电机 力矩传感器 灵巧手 工业自动化 无人物流车 Robotaxi 域控制器 激光雷达 4D毫米波 固态电池 800V高压平台 换电 光伏 HJT 钙钛矿叠层 TopCon BC电池 海上风电 虚拟电厂 储能（钠离子、液流） 低空经济 商业航天 火箭回收 卫星制造 军工信息化 无人机 低可探测材料 量子计算 量子通信 量子测量 Web3 AIGC+NFT 数字身份 区块链底层 消费 国潮 宠物经济 预制菜 休闲零食 免税 白酒 啤酒 医美 户外运动 冰雪经济</div>
+                            <div class="word-count ">3 条</div>
+                        </div>
+                        <div class="word-index">2/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">2</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01998266-f3c9-711c-87fe-c84849a2f0fc" target="_blank" class="news-link">【Fed’s Daly: A Little More Rate Cutting Will Be Needed Over Time】- U.S. economy is in “okay” shape.&lt;br/&gt;- Rates remain modestly restrictive; Fed should not go all the way to neutral as it would be too risky.&lt;br/&gt;- Fed is in a “tradeoff” space, balancing economic growth and inflation risks.&lt;br/&gt;- Inflation impact of tariffs has been smaller than expected, but labor market effects have been larger.&lt;br/&gt;- Fed must monitor both inflation and labor market for potential weakness.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num top">3</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=0199825f-3796-711c-87fe-c37520260a84" target="_blank" class="news-link">【Cloudflare Launches NET Dollar Stablecoin: Crypto Daily Digest】- &lt;b&gt;Cloudflare stablecoin&lt;/b&gt;: CEO Matthew Prince announced the NET Dollar, fully backed by the U.S. dollar, aimed at machine-to-machine payments amid rising AI agent usage. Citi projects stablecoin issuance could reach $1.9–$4 trillion by 2030.&lt;br/&gt;- &lt;b&gt;U.S. Senate hearing&lt;/b&gt;: Finance Committee schedules Oct. 1 hearing on digital asset taxation; Coinbase, Coin Center, ASKramer Law, and AICPA experts to testify.&lt;br/&gt;- &lt;b&gt;Cipher AI hosting deal&lt;/b&gt;: Bitcoin miner Cipher signs $3B, 10-year Google-backed AI data center agreement; optional renewals could raise total to $7B.&lt;br/&gt;- &lt;b&gt;South Korea&lt;/b&gt;: Naver plans Upbit merger via stock swap; both entities remain legally intact.&lt;br/&gt;- &lt;b&gt;Metaplanet outlook&lt;/b&gt;: Benchmark maintains buy rating; 25,555 BTC holdings after $632.5M purchase.&lt;br/&gt;- &lt;b&gt;Market&lt;/b&gt;: BTC ~$109,900, ETH ~$3,930; $17B BTC options expiring with max pain $110K; Crypto Fear &amp; Greed Index at 45 (neutral).</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">MKTNew</span><span class="rank-num high">4</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://mktnews.net/flashDetail.html?id=01998247-05cc-711c-87fe-8239cddc82c0" target="_blank" class="news-link">【Intel Eyes TSMC Partnership in U.S.-Backed Comeback】Intel CEO Lip-Bu Tan is pursuing investments and manufacturing partnerships with Apple, TSMC, and others following the U.S. government’s 10% stake acquisition. SoftBank invested $2 billion in August, while Nvidia contributed $5 billion, including a provision for Intel to design hardware compatible with Nvidia chips. Despite a $3.7 billion loss in H1 2025, Intel may seek additional capital from private equity and institutional investors. Tan emphasized national security, maintaining separation between design and fabrication: “building a firewall between its design and fabrication businesses to encourage customers that design their own chips and entrust Intel with making them.”</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">人工智能 AIGC 大模型 AI芯片 AI服务器 AI PC AI手机 AI 医疗影像 AI 金融 AI 教育</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">3/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">6</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926034747565800" target="_blank" class="news-link">美联储戴利：美联储正在对人工智能进行调查，以供后台使用，但还没有接近将其纳入系统。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">国务院 中共中央 部委 政府 条例 办法 规定 细则 十四五规划 专项规划 发展战略 通知 通告 公告 意见 政策 税收优惠 财政补贴 产业政策 金融监管 经济开发区 招商引资 科技创新 高新技术企业 研发投入 社会保障 医疗卫生 教育改革 住房保障 就业创业 养老服务 碳中和 碳达峰 环境保护 污染防治 新能源 可再生能源 乡村振兴 农村改革 粮食安全 农业补贴 种业振兴 军工 国防现代化 航空航天 船舶制造 兵器装备</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">4/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">25</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926031234527800" target="_blank" class="news-link">美国国务院：美国国务院已决定批准向德国政府出售AIM-120D-3先进中程空对空导弹及相关设备，预计售价12.3亿美元。国防安全合作局已向国会提交了必要的认证。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">纳斯达克上市 全球精选市场 全球市场 资本市场 IPO 中概股</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">5/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">2</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926040648186800" target="_blank" class="news-link">金十图示：2025年09月25日（周四）热门中概股行情一览（美股收盘）</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">债券 期货 ETF 基准参考指标 指数 资产负债表 智能投顾 指数基金 每股收益 指数期货 绿色投资 大宗商品 私募市场价值 纳斯达克私募市场 金融衍生产品 杠杆效应 蓝筹股 二次发售 低价股 另类投资</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">6/6</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">30</span><span class="time-info">04时14分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20250926030203546800" target="_blank" class="news-link">金十图示：2025年09月25日（周四）香港恒生指数期货技术面一览（日图）</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
