@@ -1,0 +1,690 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>热点新闻分析</title>
+        <style>
+            * { box-sizing: border-box; }
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                margin: 0; 
+                padding: 16px; 
+                background: #fafafa;
+                color: #333;
+                line-height: 1.5;
+            }
+            
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                color: white;
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .header-title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+            }
+            
+            .header-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                font-size: 14px;
+                opacity: 0.95;
+            }
+            
+            .info-item {
+                text-align: center;
+            }
+            
+            .info-label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+            
+            .info-value {
+                font-weight: 600;
+                font-size: 16px;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .word-group {
+                margin-bottom: 40px;
+            }
+            
+            .word-group:first-child {
+                margin-top: 0;
+            }
+            
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .word-name {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1a1a1a;
+            }
+            
+            .word-count {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            
+            .word-count.hot { color: #dc2626; font-weight: 600; }
+            .word-count.warm { color: #ea580c; font-weight: 600; }
+            
+            .word-index {
+                color: #999;
+                font-size: 12px;
+            }
+            
+            .news-item {
+                margin-bottom: 20px;
+                padding: 16px 0;
+                border-bottom: 1px solid #f5f5f5;
+                position: relative;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .news-item:last-child {
+                border-bottom: none;
+            }
+            
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 12px;
+                right: 0;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+            }
+            
+            .news-number {
+                color: #999;
+                font-size: 13px;
+                font-weight: 600;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                margin-top: 8px;
+            }
+            
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 40px;
+            }
+            
+            .news-item.new .news-content {
+                padding-right: 50px;
+            }
+            
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+            
+            .source-name {
+                color: #666;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+                text-align: center;
+            }
+            
+            .rank-num.top { background: #dc2626; }
+            .rank-num.high { background: #ea580c; }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+            }
+            
+            .news-link:hover {
+                text-decoration: underline;
+            }
+            
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            @media (max-width: 480px) {
+                body { padding: 12px; }
+                .header { padding: 24px 20px; }
+                .content { padding: 20px; }
+                .header-info { grid-template-columns: 1fr; gap: 12px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-item { gap: 8px; }
+                .new-item { gap: 8px; }
+                .news-number { width: 20px; height: 20px; font-size: 12px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="header-title">热点新闻分析</div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="info-label">报告类型</span>
+                        <span class="info-value">实时分析</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">新闻总数</span>
+                        <span class="info-value">68 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">热点新闻</span>
+                        <span class="info-value">28 条</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">生成时间</span>
+                        <span class="info-value">10-18 01:11</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ 请求失败的平台</div>
+                    <ul class="error-list"><li class="error-item">_36kr</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">创新药 ADC 双抗 GLP-1 NASH CXO 中药 医疗设备 脑机接口 合成生物 先进制造 工业母机 高端数控 激光设备 碳纤维 机器人核心零部件 航空发动机 稀土永磁 有色金属 钛合金 高温合金 碳纤维 石墨烯 超导线材 铜 铝 黄金 锂 钴 镍 稀土 煤炭 油气 化肥 磷化工 碳中和 碳交易 CCER 绿电 绿氢 氢能储运 燃料电池 一带一路 城市更新 装配式建筑 券商 保险 金融科技 数字人民币 跨境支付 北交所 电力 高速公路 港口 电信运营商 国有大行 债券 可转债 TMT转债 新能源转债 中短债 同业存单 债性收益 微盘股 专精特新“小巨人” 中证2000 量化对冲 红利低波策略 更加积极的财政政策 适度宽松的货币政策 逆周期调节、跨周期设计 稳增长、稳就业、稳物价 新质生产力 科技自立自强 反内卷 钢铁 煤炭 设备更新 消费品以旧换新 绿色金融 促进服务消费 新型消费 生育补贴 普惠托育体系 家电 汽车以旧换新 限购优化 地产去库存 保障房 城中村改造 海南自贸港封关运作 北交所扩容 科创板做市 中长期资金入市 险资权益配置 央行结构性货币工具 国家发展规划法草案 医保基金专项整治 反腐制度化 特朗普 关税清单 对华商品 中美、美欧、美日韩贸易链重构 欧盟对华电动汽车关税落地 俄乌停火谈判 对乌军援削减 南海对峙 印巴冲突 以伊冲突 金砖峰会 美英拒签 绿色壁垒与碳关税 美联储 黄金 铜 锂 钴 镍 稀土 产能转移</div>
+                            <div class="word-count hot">26 条</div>
+                        </div>
+                        <div class="word-index">1/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">知乎</span><span class="rank-num top">2</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.zhihu.com/question/1962162767436965331" target="_blank" class="news-link">黄金还能不能跌回 900?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">2</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018004603004800" target="_blank" class="news-link">美联储穆萨莱姆：下一任美联储领导人不具备资格的可能性极低。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num high">4</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018004243889800" target="_blank" class="news-link">美联储穆萨莱姆：货币政策的独立性至关重要，但需具备透明度和问责制。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">8</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003945740800" target="_blank" class="news-link">美联储穆萨莱姆：消息人士称，目前信贷条件非常良好。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">9</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003912897800" target="_blank" class="news-link">美联储穆萨莱姆：你始终需要关注信贷市场风险。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">10</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003901970800" target="_blank" class="news-link">美联储穆萨莱姆：近期信贷市场的一些压力与宏观经济环境并无关联。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">11</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003805010800" target="_blank" class="news-link">美联储穆萨莱姆：股价并不是评估经济状况的关键因素。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">12</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003733413800" target="_blank" class="news-link">美联储穆萨莱姆：当前金融状况宽松。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">13</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003700474800" target="_blank" class="news-link">美联储穆萨莱姆：货币政策已处于某种限制性和中性状态。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">14</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003553826800" target="_blank" class="news-link">美联储穆萨莱姆：就业市场并未面临迫在眉睫的问题，但风险已有所增加。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">16</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003533501800" target="_blank" class="news-link">美联储穆萨莱姆：未见裁员人数增加。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">抖音</span><span class="rank-num ">17</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.douyin.com/hot/2273212" target="_blank" class="news-link">黄金还能涨成什么样</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">17</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003525132800" target="_blank" class="news-link">美联储穆萨莱姆：我们可能看到负的就业数据，但失业率未必会因此变动。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">18</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003459666800" target="_blank" class="news-link">美联储穆萨莱姆：就业市场的平衡点大约在每月3万到8万个工作岗位之间。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">19</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003421112800" target="_blank" class="news-link">现货黄金向下触及4210美元/盎司，日内跌2.64%。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">16</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">20</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003402153800" target="_blank" class="news-link">美联储穆萨莱姆：就业增长受到移民政策变化的影响。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">17</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">21</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003348805800" target="_blank" class="news-link">美联储穆萨莱姆：总体而言，目前就业市场已接近充分就业。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">18</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">22</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003329664800" target="_blank" class="news-link">特朗普前助理博尔顿否认不当处理机密信息指控</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">19</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">23</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003305977800" target="_blank" class="news-link">美联储穆萨莱姆：劳动力市场并非通胀之源。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">20</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">24</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003257003800" target="_blank" class="news-link">美联储穆萨莱姆：商界人士表示，就业市场已经降温。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">21</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">25</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003205313800" target="_blank" class="news-link">美联储穆萨莱姆：到2026年下半年，通胀率将回落至2%，但需要政策来对抗通胀。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">22</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">26</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003051766800" target="_blank" class="news-link">美联储穆萨莱姆：我完全致力于2%的（通胀）目标，认为美联储同样支持这一目标。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">23</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">27</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018003003961800" target="_blank" class="news-link">美联储穆萨莱姆：服务业通胀仍处于高位，需进一步努力加以缓解。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">24</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">28</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018002936707800" target="_blank" class="news-link">美联储穆萨莱姆：关税似乎并未转嫁至服务业。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">25</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">29</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018002923820800" target="_blank" class="news-link">美联储穆萨莱姆：有人认为，目前与利率无关的成本因素更为重要。</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">26</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">30</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018002839836800" target="_blank" class="news-link">美联储穆萨莱姆：美联储将通胀率恢复至2%至关重要。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">MR VR AR 折叠屏 AI 穿戴 空间计算 Vision Pro Micro-OLED 机器人 人形机器人 谐波减速器 伺服电机 力矩传感器 灵巧手 工业自动化 无人物流车 Robotaxi 域控制器 激光雷达 4D毫米波 固态电池 800V高压平台 换电 光伏 HJT 钙钛矿叠层 TopCon BC电池 海上风电 虚拟电厂 储能（钠离子、液流） 低空经济 商业航天 火箭回收 卫星制造 军工信息化 无人机 低可探测材料 量子计算 量子通信 量子测量 Web3 AIGC+NFT 数字身份 区块链底层 消费 国潮 宠物经济 预制菜 休闲零食 免税 白酒 啤酒 医美 户外运动 冰雪经济</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">2/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num top">3</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018004306505800" target="_blank" class="news-link">美联储穆萨莱姆：各收入群体的消费均表现强劲，富裕群体正受益于财富效应。</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name">纳斯达克上市 全球精选市场 全球市场 资本市场 IPO 中概股</div>
+                            <div class="word-count ">1 条</div>
+                        </div>
+                        <div class="word-index">3/3</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">金十数据</span><span class="rank-num ">7</span><span class="time-info">01时11分</span>
+                            </div>
+                            <div class="news-title"><a href="https://flash.jin10.com/detail/20251018004043733800" target="_blank" class="news-link">金十图示：2025年10月17日（周五）热门中概股行情一览（美股盘中）</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
